@@ -153,7 +153,7 @@ bot.on("message", async (msg) => {
     if (!event.participants) {
       event.participants = text
       await authorizeUser(userId, `creating_event:${JSON.stringify(event)}`)
-      return bot.sendMessage(chatId, "Please enter the Event Location (Dallol, Yeha, Lucy, Tekeze, Gerealta, Debredamo):")
+      return bot.sendMessage(chatId, "Please enter the Event Location:")
     }
 
     if (!event.location) {
