@@ -14,7 +14,7 @@ export async function broadcastEvent(bot, departments, event, pdfFilePath) {
     for (const chatId of chatIds) {
       try {
         await bot.sendMessage(chatId, message, { parse_mode: "Markdown" });
-        await bot.sendDocument(chatId, pdfFilePath, { caption: `Event ${event.id} Details` });
+        await bot.sendDocument(chatId, pdfFilePath, { caption: `${event.companyName} Event Details` });
       } catch (error) {
         console.error(`Error sending message to ${department} (${chatId}):`, error);
       }

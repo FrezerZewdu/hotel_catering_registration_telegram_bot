@@ -9,6 +9,8 @@
     "dev": "nodemon index.js",
     "build": "next build",
     "lint": "next lint",
+    "stop": "pm2 stop index.js",
+    "restart": "pm2 restart index.js",
     "setup-db": "mariadb -u root -p < schema.sql"
   },
   "keywords": [

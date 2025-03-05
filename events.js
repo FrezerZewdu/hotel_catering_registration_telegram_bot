@@ -32,9 +32,10 @@ export async function createEvent(eventData, bot, departments, chatId) {
   let conn;
   try {
     conn = await pool.getConnection();
-    const result = await conn.query('INSERT INTO events (client_name, company_name, contact_number, event_name, event_date, event_time, participants, location, duration, services, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+    const result = await conn.query('INSERT INTO events (client_name, company_name, company_tin, contact_number, event_name, event_date, event_time, participants, location, duration, services, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
       eventData.clientName,
       eventData.companyName,
+      eventData.tinNumber || null,
       eventData.contactNumber,
       eventData.eventName,
       eventData.eventDate,
@@ -78,7 +79,7 @@ async function generateEventPDF(event) {
     fs.mkdirSync(pdfDir, { recursive: true });
   }
 
-  const filePath = path.join(pdfDir, `${event.companyName}_${event.date}.pdf`);
+  const filePath = path.join(pdfDir, `${event.companyName}_${event.eventDate}_${event.id}.pdf`);
   const logoPath = path.join(__dirname, 'assets', 'logo.png'); // Adjust for logo
   const signatureDir = path.join(__dirname, 'assets', 'signatures'); // Adjust for signatures
   const watermarkPath = path.join(__dirname, 'assets', 'logo.png'); // Adjust for watermark
@@ -98,27 +99,27 @@ async function generateEventPDF(event) {
       .lineTo(fullWidth - 50, 70)
       .stroke();
 
-      doc.moveDown(2)
-      .fontSize(10)
+      doc.moveDown(1)
+      .fontSize(9)
       .text(`Event ID:  ${event.id}`, { align: 'right' })
       .moveDown(0.2);
 
-      doc.fontSize(10)
+      doc.fontSize(9)
         .text(`Date: ${formatDate(event.createdAt)}`, { align: 'right' })
-        .moveDown(2);
+        .moveDown(0.2);
 
     // Section Helper Function
     function addSection(title, items) {
-      doc.fontSize(14).font('Helvetica-Bold').fillColor('#0000FF')
+      doc.fontSize(12).font('Helvetica-Bold').fillColor('#0000FF')
         .text(title).moveDown(0.5)
-        .font('Helvetica').fillColor('black').fontSize(11);
+        .font('Helvetica').fillColor('black').fontSize(10);
 
       if (Array.isArray(items)) {
         items.forEach(item => {
           doc.text(`• ${item}`, { indent: 20 }).moveDown(0.2);
         });
       } else {
-        doc.text(items).moveDown(1);
+        doc.text(items, {width: doc.page.width -100, align: 'left'});
       }
       doc.moveDown(1);
     }
@@ -127,6 +128,7 @@ async function generateEventPDF(event) {
     addSection('Client Info', [
       `Client Name: ${event.clientName}`,
       `Company Name: ${event.companyName}`,
+      `Company TIN no.:${event.tinNumber}`,
       `Contact Number: ${event.contactNumber}`,
     ]);
 
@@ -150,7 +152,7 @@ async function generateEventPDF(event) {
     ]);
 
     // **Service Approval with Signatures**
-    doc.fontSize(14).font('Helvetica-Bold').fillColor('#0000FF').text("Service Approval").moveDown(0.5).fontSize(11).fillColor('black');
+    doc.fontSize(12).font('Helvetica-Bold').fillColor('#0000FF').text("Service Approval").moveDown(0.5).fontSize(10).fillColor('black');
 
     const managers = [
       { job: 'Prepared By', name: "Merhawi Solomon (Marketing Manager)", signature: "merhawi.png" },
@@ -159,7 +161,7 @@ async function generateEventPDF(event) {
     ];
 
     managers.forEach((manager) => {
-      doc.fontSize(11).text(`${manager.job}: ${manager.name}`);
+      doc.fontSize(10).text(`${manager.job}: ${manager.name}`);
       const signaturePath = path.join(signatureDir, manager.signature);
       const signatureX = (doc.page.width - 100) /3;
       if (fs.existsSync(signaturePath)) {
@@ -167,15 +169,15 @@ async function generateEventPDF(event) {
           signaturePath, 
           (signatureX + 140), 
           (doc.y - (manager.signature == 'kirubel.png'? 28 : 26)), 
-          { align: 'center', width: 70 }
+          { align: 'center', width: 67 }
         );
       }
       doc.moveDown(1);
     });
     // CC’d Departments (Grid Layout - 3 Columns)
-    doc.fontSize(14).font('Helvetica-Bold').fillColor('#0000FF')
+    doc.fontSize(12).font('Helvetica-Bold').fillColor('#0000FF')
       .text('CC - Department').moveDown(0.5)
-      .font('Helvetica').fillColor('black').fontSize(12);
+      .font('Helvetica').fillColor('black').fontSize(10);
 
       const columns = 3;
       const colWidth = (doc.page.width - 100) / columns; // calculate width of each column
@@ -193,7 +195,7 @@ async function generateEventPDF(event) {
       });
   
       // Footer Section in 3-column format
-      doc.moveDown(2);
+      doc.moveDown(1);
       doc
       .moveTo(50, 70)
       .strokeColor('#000').lineWidth(1)
@@ -208,14 +210,14 @@ async function generateEventPDF(event) {
       doc.x = 50; // Start at left margin
       const column = (footerWidth / 3) - 20; // Calculate width of each column
       // Column 1
-      doc.font('Helvetica').fontSize(9).fillColor('gray')
+      doc.font('Helvetica').fontSize(8).fillColor('gray')
         .text('Phone: +251-93-028-5483', { align: 'left', width: column })
         .moveDown(0.5)
         .text('Website: www.planethotelethiopia.com', { align: 'left', width: column });
       doc.y = footerY; // Reset Y position for next column
       doc.x += column + 20;
       // Column 2
-      doc.fontSize(9).fillColor('gray')
+      doc.fontSize(8).fillColor('gray')
         .text('Email: contact@planethotelethiopia.com', { align: 'center', width: column })
         .moveDown(0.5)
         .text('Address: Tigray, Ethiopia', { align: 'center', width: column });
@@ -223,7 +225,7 @@ async function generateEventPDF(event) {
         doc.y = footerY; // Reset Y position for next column
         doc.x += column + 20;
       // Column 3
-      doc.fontSize(9).fillColor('gray')
+      doc.fontSize(8).fillColor('gray')
         .text('Fax: 0344405717', { align: 'right', width: column })
         .moveDown(0.5)
         .text('Location: Hawelty street, Mekele', { align: 'right', width: column });
