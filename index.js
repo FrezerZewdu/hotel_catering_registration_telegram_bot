@@ -59,16 +59,21 @@ bot.onText(/\/start/, async (msg) => {
     )
   }
 
-  // Set user state to "registering"
-  await authorizeUser(msg.from.id, "registering")
+  try {
+    // Set user state to "registering"
+    await authorizeUser(msg.from.id, "registering")
 
-  // Prompt the user to register into a department
-  bot.sendMessage(
-    chatId,
-    "Welcome to the Hotel Catering Event Bot!\n\n" +
-      "Please register into a department by replying with the department name.\n\n" +
-      `Available departments: ${departmentNames.join(', ')}`,
-  )
+    // Prompt the user to register into a department
+    bot.sendMessage(
+      chatId,
+      "Welcome to the Hotel Catering Event Bot!\n\n" +
+        "Please register into a department by replying with the department name.\n\n" +
+        `Available departments: ${departmentNames.join(', ')}`,
+    )
+  } catch (error) {
+    console.error("Error during user registration:", error)
+    bot.sendMessage(chatId, "An error occurred while trying to register you. Please try again later.")
+  }
 })
 
 // Listen for messages to handle user registration and event creation
@@ -323,8 +328,13 @@ bot.onText(/\/create/, async (msg) => {
   const chatId = msg.chat.id
   const username = msg.from.username
 
+  // Check if username is defined
+  if (!chatId) {
+    return bot.sendMessage(chatId, "Error: Your Telegram username is not set. Please set a username in your Telegram settings and try again.")
+  }
+
   // Check if user is authorized (marketing team)
-  if (!(await isMarketingTeam(username))) {
+  if (!(await isMarketingTeam(chatId))) {
     return bot.sendMessage(chatId, "Sorry, only marketing team members can create catering events.")
   }
 

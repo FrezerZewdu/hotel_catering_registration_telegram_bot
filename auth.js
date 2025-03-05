@@ -17,6 +17,10 @@ const pool = mariadb.createPool({
  * @returns {Promise<boolean>} - True if user is in marketing team
  */
 export async function isMarketingTeam(username) {
+  if (!username) {
+    throw new Error("Username is undefined")
+  }
+
   let conn;
   try {
     conn = await pool.getConnection();
