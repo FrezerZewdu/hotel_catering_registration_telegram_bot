@@ -1,0 +1,32 @@
+{
+  "name": "planet_hotel_bot",
+  "version": "1.0.0",
+  "description": "Planet hotel's catering ordering bot",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "build": "next build",
+    "lint": "next lint",
+    "setup-db": "mariadb -u root -p < schema.sql"
+  },
+  "keywords": [
+    "bot",
+    "catering",
+    "ordering",
+    "planet",
+    "hotel"
+  ],
+  "author": "Frezer Zewdu",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "mariadb": "^2.5.5",
+    "node-telegram-bot-api": "^0.66.0",
+    "pdfkit": "^0.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
