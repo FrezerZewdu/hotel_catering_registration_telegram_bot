@@ -32,7 +32,7 @@ export async function createEvent(eventData, bot, departments, chatId) {
   let conn;
   try {
     conn = await pool.getConnection();
-    const result = await conn.query('INSERT INTO events (client_name, company_name, company_tin, contact_number, event_name, event_date, event_time, participants, location, duration, services, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+    const result = await conn.query('INSERT INTO events (client_name, company_name, company_tin, contact_number, event_name, event_date, event_time, participants, location, duration, services, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
       eventData.clientName,
       eventData.companyName,
       eventData.tinNumber || null,
@@ -99,7 +99,7 @@ async function generateEventPDF(event) {
       .lineTo(fullWidth - 50, 70)
       .stroke();
 
-      doc.moveDown(1)
+      doc.moveDown(2)
       .fontSize(9)
       .text(`Event ID:  ${event.id}`, { align: 'right' })
       .moveDown(0.2);
@@ -195,7 +195,7 @@ async function generateEventPDF(event) {
       });
   
       // Footer Section in 3-column format
-      doc.moveDown(1);
+      doc.moveDown(2);
       doc
       .moveTo(50, 70)
       .strokeColor('#000').lineWidth(1)

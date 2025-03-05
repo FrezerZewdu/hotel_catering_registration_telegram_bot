@@ -128,13 +128,13 @@ bot.on("message", async (msg) => {
     if (!event.companyName) {
       event.companyName = text
       await authorizeUser(userId, `creating_event:${JSON.stringify(event)}`)
-      return bot.sendMessage(chatId, "Please enter the Contact Number:")
+      return bot.sendMessage(chatId, "Please enter the TIN Number:")
     }
 
     if(!event.tinNumber) {
       event.tinNumber = text
       await authorizeUser(userId, `creating_event:${JSON.stringify(event)}`)
-      return bot.sendMessage(chatId, "Please enter the TIN Number:")
+      return bot.sendMessage(chatId, "Please enter the Contact Number:")
     }
 
     if (!event.contactNumber) {
