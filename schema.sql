@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS events (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   client_name VARCHAR(255) NOT NULL,
   company_name VARCHAR(255) NOT NULL,
+  company_tin VARCHAR(255),
   contact_number VARCHAR(255) NOT NULL,
   event_name VARCHAR(255) NOT NULL,
   event_date DATE NOT NULL,
