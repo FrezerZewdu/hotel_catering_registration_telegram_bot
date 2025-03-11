@@ -79,7 +79,8 @@ async function generateEventPDF(event) {
     fs.mkdirSync(pdfDir, { recursive: true });
   }
 
-  const filePath = path.join(pdfDir, `${event.companyName}_${event.eventDate}_${event.id}.pdf`);
+  const sanitizedEventName = event.companyName.replace(/\//g, '_');
+  const filePath = path.join(pdfDir, `${sanitizedEventName}_${event.eventDate}_${event.id}.pdf`);
   const logoPath = path.join(__dirname, 'assets', 'logo.png'); // Adjust for logo
   const signatureDir = path.join(__dirname, 'assets', 'signatures'); // Adjust for signatures
   const watermarkPath = path.join(__dirname, 'assets', 'logo.png'); // Adjust for watermark

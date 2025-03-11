@@ -150,6 +150,10 @@ bot.on("message", async (msg) => {
     }
 
     if (!event.eventDate) {
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/
+      if (!dateRegex.test(text)) {
+        return bot.sendMessage(chatId, "Invalid date format. Please enter the Event Date in YYYY-MM-DD format:")
+      }
       event.eventDate = text
       await authorizeUser(userId, `creating_event:${JSON.stringify(event)}`)
       return bot.sendMessage(chatId, "Please enter the Event Time (HH:MM):")
